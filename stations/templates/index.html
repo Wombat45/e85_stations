@@ -24,28 +24,25 @@
     </style>
 </head>
 <body>
-    <div class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-        <div class="container">
-            <h1 class="text-center mb-4">E85 Stations</h1>
-            <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <form method="post" class="mb-4">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            {{ form.zip_code.label_tag }} {{ form.zip_code }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.miles.label_tag }} {{ form.miles }}
-                        </div>
-                        <div class="form-group text-center">
-                            <input type="submit" value="Submit" class="btn btn-primary">
-                        </div>
-                    </form>
+    <div class="container">
+        <div hx-post="/search/" hx-trigger="submit" hx-swap="outerHTML">
+            <form method="post" class="mb-4">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.zip_code.label_tag }} {{ form.zip_code }}
                 </div>
-            </div>
-            
-            {% if page_obj %}
-                <h2>Results</h2>
+                <div class="form-group">
+                    {{ form.miles.label_tag }} {{ form.miles }}
+                </div>
+                <div class="form-group text-center">
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+        
+        {% if page_obj %}
+            <h2>Results</h2>
+            <div hx-get="/results/" hx-trigger="every 1s" hx-swap="outerHTML">
                 <table class="table table-dark table-striped">
                     <thead>
                         <tr>
@@ -68,32 +65,32 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                
-                <nav>
-                    <ul class="pagination">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            </div>
+        
+            <nav>
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link">Previous</a></li>
+                    {% endif %}
+        
+                    {% for i in page_obj.paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active"><a class="page-link">{{ i }}</a></li>
                         {% else %}
-                            <li class="page-item disabled"><a class="page-link">Previous</a></li>
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
                         {% endif %}
-            
-                        {% for i in page_obj.paginator.page_range %}
-                            {% if page_obj.number == i %}
-                                <li class="page-item active"><a class="page-link">{{ i }}</a></li>
-                            {% else %}
-                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-            
-                        {% if page_obj.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><a class="page-link">Next</a></li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
-        </div>
+                    {% endfor %}
+        
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
     </div>
 
     <!-- Add Bootstrap JS -->
